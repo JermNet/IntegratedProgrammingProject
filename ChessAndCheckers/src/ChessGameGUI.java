@@ -17,6 +17,7 @@ public class ChessGameGUI extends JFrame{
     private String redPiecePath = "src/redcircle.png";
     private ImageIcon redPiece = new ImageIcon(redPiecePath);
     private boolean redTurn = true;
+    private int blackPoints = 0, redPoints = 0;
 
     public ChessGameGUI() {
 
@@ -206,24 +207,70 @@ public class ChessGameGUI extends JFrame{
 
         // To check for diagonals and junk
         int rowDiff = endRow - startRow;
-        int colDiff = endCol - startCol;
-        boolean validMove = (getLabel(pieceToMove).getIcon().equals(redPiece) && rowDiff > 0) || (getLabel(pieceToMove).getIcon().equals(blackPiece) && rowDiff < 0);
+        int colDiff = Math.abs(endCol - startCol);
+        boolean validMove = (getLabel(pieceToMove).getIcon().equals(redPiece) && rowDiff == 1) ||
+                (getLabel(pieceToMove).getIcon().equals(blackPiece) && rowDiff == -1);
         //|| pieceToMove.isKing;
 
-        if (validMove && colDiff == 1 && Math.abs(rowDiff) == 1) {
-            System.out.println(rowDiff + " " + colDiff);
+        if (validMove && colDiff == 1) {
             return true;
         }
 
-        if (validMove && colDiff == 2 && Math.abs(rowDiff) == 2) {
-            int midRow = (startRow + endRow) / 2;
-            int midCol = (startCol + endCol) / 2;
-            JPanel middlePiece = squares[midRow][midCol];
-            //return middlePiece != "" && middlePiece != currentPlayer;
-            System.out.println("In the heck zone");
-            return !(middlePiece.getComponents().length > 1);
+        if ((getLabel(pieceToMove).getIcon().equals(redPiece) && rowDiff == 2) || (getLabel(pieceToMove).getIcon().equals(blackPiece) && rowDiff == -2)) {
+            if (colDiff == 2) {
+                int midRow = (startRow + endRow) / 2;
+                int midCol = (startCol + endCol) / 2;
+                JPanel middlePiece = squares[midRow][midCol];
+
+                if (middlePiece != null) {
+                    JLabel middle = getLabel(middlePiece);
+                    if ((getLabel(pieceToMove).getIcon().equals(redPiece) && middle.getIcon().equals(blackPiece)) || (getLabel(pieceToMove).getIcon().equals(blackPiece) && middle.getIcon().equals(redPiece))) {
+                        if (redTurn) {
+                            redPoints ++;
+                            System.out.println(redPoints);
+                        } else {
+                            blackPoints ++;
+                            System.out.println(blackPoints);
+                        }
+                        middlePiece.removeAll();
+                        middlePiece.repaint();
+                        checkWinCondition();
+                        return true;
+                    }
+                }
+            }
+
+
         }
         return false;
     }
+
+    private void checkWinCondition() {
+        int redCount = 0;
+        int blackCount = 0;
+
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                JLabel pieceLabel = getLabel(squares[row][col]);
+                if (pieceLabel != null) {
+                    ImageIcon piece = (ImageIcon) pieceLabel.getIcon();
+                    if (piece.equals(redPiece)) {
+                        redCount++;
+                    } else if (piece.equals(blackPiece)) {
+                        blackCount++;
+                    }
+                }
+            }
+        }
+
+        if (redCount == 0) {
+            JOptionPane.showMessageDialog(this, "Black Wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+            //resetGame();
+        } else if (blackCount == 0) {
+            JOptionPane.showMessageDialog(this, "Red Wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+            //resetGame();
+        }
+    }
+
 }
 
