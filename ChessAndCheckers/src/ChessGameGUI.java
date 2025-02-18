@@ -1,14 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 public class ChessGameGUI extends JFrame{
     private JPanel[][] squares = new JPanel[8][8];
-    private CheckerPiece checker = new CheckerPiece();
     private JPanel checkerPanel = new JPanel();
     private boolean clickedSquare = false;
     private int savedRow = 0, savedCol = 0;
@@ -43,6 +47,31 @@ public class ChessGameGUI extends JFrame{
         checkerGame.setFont(new Font("Arial", Font.PLAIN, 40));
         chessGame.setFont(new Font("Arial", Font.PLAIN, 40));
         helpGame.setFont(new Font("Arial", Font.PLAIN, 40));
+
+        helpGame.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Help Me! was clicked!");
+                try {
+                    URI uri = new URI("https://www.chess.com/learn-how-to-play-chess");
+                    URI uri2 = new URI("https://www.officialgamerules.org/board-games/checkers");
+                    if (Desktop.isDesktopSupported()) {
+                        Desktop.getDesktop().browse(uri);
+                        Desktop.getDesktop().browse(uri2);
+                    } else {
+                        System.out.println("Desktop not supported.");
+                    }
+                } catch (URISyntaxException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        checkerGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new ChessGameGUI();
+            }});
 
         border.addMouseListener(new MouseAdapter() {
             @Override
@@ -152,9 +181,11 @@ public class ChessGameGUI extends JFrame{
                 if ((row % 2 == 0) == (col % 2 == 0)) {
                     square.setBackground(Color.WHITE);
                     if (row < 3) {
-                        square.add(new JLabel(redPiece));
+                        CheckerPiece piece = new CheckerPiece(CheckerPiece.CheckerColour.RED, redPiece);
+                        square.add(piece);
                     } else if (row > 4) {
-                        square.add(new JLabel(blackPiece));
+                        CheckerPiece piece = new CheckerPiece(CheckerPiece.CheckerColour.BLACK, blackPiece);
+                        square.add(piece);
                     }
                 } else {
                     square.setBackground(Color.BLACK);
