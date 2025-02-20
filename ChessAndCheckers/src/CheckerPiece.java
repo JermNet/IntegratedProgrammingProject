@@ -25,4 +25,6 @@ public class CheckerPiece extends JLabel {
         isKing = true;
     }
 
+    public boolean isKing() { return isKing; }
+
 }
