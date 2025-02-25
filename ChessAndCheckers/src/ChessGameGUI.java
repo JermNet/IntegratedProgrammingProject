@@ -16,10 +16,16 @@ public class ChessGameGUI extends JFrame{
     private JPanel checkerPanel = new JPanel();
     private boolean clickedSquare = false;
     private int savedRow = 0, savedCol = 0;
+
     private String blackPiecePath = "src/blackcircle.png";
     private ImageIcon blackPiece = new ImageIcon(blackPiecePath);
     private String redPiecePath = "src/redcircle.png";
     private ImageIcon redPiece = new ImageIcon(redPiecePath);
+    private String blackKingPath = "src/blackking.png";
+    private ImageIcon blackKing = new ImageIcon(blackKingPath);
+    private String redKingPath = "src/redking.png";
+    private ImageIcon redKing = new ImageIcon(redKingPath);
+
     private boolean redTurn = true;
     private int blackPoints = 0, redPoints = 0;
 
@@ -89,27 +95,36 @@ public class ChessGameGUI extends JFrame{
                 if (col >= 0 && col < 8 && row >= 0 && row < 8) {
                     if (redTurn) {
                         if (clickedSquare && validMove(savedRow, savedCol, row, col)) {
-                            CheckerPiece piece = getPiece(squares[savedRow][savedCol]);
+
                             //System.out.println("Checking if piece exists" + piece.isKing());
-                            piece = makeKing(piece, row);
-                            if (piece != null) {
-                                squares[savedRow][savedCol].removeAll();
-                                squares[savedRow][savedCol].add(piece);
-                            }
+
+                            CheckerPiece checkerPiece = getPiece(squares[savedRow][savedCol]);
 
                             squares[savedRow][savedCol].removeAll();
                             squares[savedRow][savedCol].setBackground(Color.WHITE);
                             squares[savedRow][savedCol].repaint();
 
-                            //squares[savedRow][savedCol].setCol
-                            squares[row][col].add(new JLabel(redPiece));
+                            //squares[savedRow][savedCol].setCo
+                            squares[row][col].add(checkerPiece);
+                            squares[row][col].repaint();
+                            CheckerPiece piece = getPiece(squares[row][col]);
+                            if (!piece.isKing()) {
+                                piece = makeKing(piece, row);
+                                if (piece != null) {
+                                    squares[row][col].removeAll();
+                                    squares[row][col].add(piece);
+                                    squares[row][col].repaint();
+                                }
+                            }
                             clickedSquare = false;
                             redTurn = false;
+
                             //System.out.println(clickedSquare + " " + redTurn);
                         }
                         boolean redCanGo;
                         try {
-                            redCanGo = redTurn && getLabel(squares[row][col]).getIcon().equals(redPiece);
+                            //redCanGo = redTurn && getLabel(squares[row][col]).getIcon().equals(redPiece);
+                            redCanGo = redTurn && getPiece(squares[row][col]).getCheckerColour() == CheckerPiece.CheckerColour.RED;
                             //System.out.println(redCanGo);
                         } catch (Exception ex){
                             redCanGo = false;
@@ -125,25 +140,31 @@ public class ChessGameGUI extends JFrame{
 
                     if (!redTurn) {
                         if (clickedSquare && validMove(savedRow, savedCol, row, col)) {
-                            CheckerPiece piece = getPiece(squares[savedRow][savedCol]);
-                            piece = makeKing(piece, row);
-                            if (piece != null) {
-                                squares[savedRow][savedCol].removeAll();
-                                squares[savedRow][savedCol].add(piece);
-                            }
+                            CheckerPiece checkerPiece = getPiece(squares[savedRow][savedCol]);
 
                             squares[savedRow][savedCol].removeAll();
                             squares[savedRow][savedCol].setBackground(Color.WHITE);
                             squares[savedRow][savedCol].repaint();
                             //squares[savedRow][savedCol].setCol
-                            squares[row][col].add(new JLabel(blackPiece));
+                            squares[row][col].add(checkerPiece);
+                            squares[row][col].repaint();
+                            CheckerPiece piece = getPiece(squares[row][col]);
+                            if (!piece.isKing()) {
+                                piece = makeKing(piece, row);
+                                if (piece != null) {
+                                    squares[row][col].removeAll();
+                                    squares[row][col].add(piece);
+                                    squares[row][col].repaint();
+                                }
+                            }
                             clickedSquare = false;
                             redTurn = true;
                             //System.out.println(clickedSquare + " " + blackPiece);
                         }
                         boolean blackCanGo;
                         try {
-                            blackCanGo = !redTurn && getLabel(squares[row][col]).getIcon().equals(blackPiece);
+                            //blackCanGo = !redTurn && getLabel(squares[row][col]).getIcon().equals(blackPiece);
+                            blackCanGo = !redTurn && getPiece(squares[row][col]).getCheckerColour() == CheckerPiece.CheckerColour.BLACK;
                             //System.out.println(blackCanGo);
                         } catch (Exception ex){
                             blackCanGo = false;
@@ -186,9 +207,14 @@ public class ChessGameGUI extends JFrame{
     }
 
     private CheckerPiece makeKing(CheckerPiece piece, int row) {
-        System.out.print("Inside making");
+        System.out.println("Inside making");
         if ((row == 7 && piece.getCheckerColour() == CheckerPiece.CheckerColour.RED  || (row == 0 && piece.getCheckerColour() == CheckerPiece.CheckerColour.BLACK))) {
             piece.PromoteKing();
+            if (piece.getCheckerColour() == CheckerPiece.CheckerColour.BLACK) {
+                piece.setIcon(blackKing);
+            } else {
+                piece.setIcon(redKing);
+            }
             System.out.println("True king" + piece.isKing());
             return piece;
         }
@@ -275,48 +301,28 @@ public class ChessGameGUI extends JFrame{
         // To check for diagonals and junk
         int rowDiff = endRow - startRow;
         int colDiff = Math.abs(endCol - startCol);
-        boolean validMove = (getLabel(pieceToMove2).getIcon().equals(redPiece) && rowDiff == 1) ||
-                (getLabel(pieceToMove2).getIcon().equals(blackPiece) && rowDiff == -1);
+//        boolean validMove = (getLabel(pieceToMove2).getIcon().equals(redPiece) && rowDiff == 1) ||
+//                (getLabel(pieceToMove2).getIcon().equals(blackPiece) && rowDiff == -1) || pieceToMove.isKing();
+
+        boolean validMove = (pieceToMove.getCheckerColour() == CheckerPiece.CheckerColour.RED && rowDiff == 1) ||
+                (pieceToMove.getCheckerColour() == CheckerPiece.CheckerColour.BLACK && rowDiff == -1) || pieceToMove.isKing();
 
         if (validMove && colDiff == 1) {
             return true;
         }
 
 
-        if ((getLabel(pieceToMove2).getIcon().equals(redPiece) && rowDiff == 2) || (getLabel(pieceToMove2).getIcon().equals(blackPiece) && rowDiff == -2)) {
-            if (colDiff == 2) {
-                int midRow = (startRow + endRow) / 2;
-                int midCol = (startCol + endCol) / 2;
-                JPanel middlePiece = squares[midRow][midCol];
-
-                if (middlePiece != null) {
-                    JLabel middle = getLabel(middlePiece);
-                    if ((getLabel(pieceToMove2).getIcon().equals(redPiece) && middle.getIcon().equals(blackPiece)) || (getLabel(pieceToMove2).getIcon().equals(blackPiece) && middle.getIcon().equals(redPiece))) {
-                        if (redTurn) {
-                            redPoints ++;
-                            System.out.println(redPoints);
-                        } else {
-                            blackPoints ++;
-                            System.out.println(blackPoints);
-                        }
-                        middlePiece.removeAll();
-                        middlePiece.repaint();
-                        checkWinCondition();
-                        return true;
-                    }
-                }
-            }
-        }
-
-//        if ((pieceToMove.getCheckerColour().equals(CheckerPiece.CheckerColour.RED) && rowDiff == 2) || (pieceToMove.getCheckerColour().equals(CheckerPiece.CheckerColour.BLACK) && rowDiff == -2)) {
+//        if ((getLabel(pieceToMove2).getIcon().equals(redPiece) && rowDiff == 2) || (getLabel(pieceToMove2).getIcon().equals(blackPiece) && rowDiff == -2)) {
+//            System.out.println("Valid move");
 //            if (colDiff == 2) {
 //                int midRow = (startRow + endRow) / 2;
 //                int midCol = (startCol + endCol) / 2;
-//                CheckerPiece middlePiece = getPiece(squares[midRow][midCol]);
+//                JPanel middlePiece = squares[midRow][midCol];
 //
 //                if (middlePiece != null) {
-//                    if ((pieceToMove.getCheckerColour().equals(CheckerPiece.CheckerColour.RED) && middlePiece.getCheckerColour().equals(CheckerPiece.CheckerColour.BLACK))
-//                            || (pieceToMove.getCheckerColour().equals(CheckerPiece.CheckerColour.BLACK) && middlePiece.getCheckerColour().equals(CheckerPiece.CheckerColour.RED))) {
+//                    JLabel middle = getLabel(middlePiece);
+//                    if ((getLabel(pieceToMove2).getIcon().equals(redPiece) && middle.getIcon().equals(blackPiece)) ||
+//                            (getLabel(pieceToMove2).getIcon().equals(blackPiece) && middle.getIcon().equals(redPiece))) {
 //                        if (redTurn) {
 //                            redPoints ++;
 //                            System.out.println(redPoints);
@@ -331,9 +337,36 @@ public class ChessGameGUI extends JFrame{
 //                    }
 //                }
 //            }
-//
-//
 //        }
+
+        if ((pieceToMove.getCheckerColour().equals(CheckerPiece.CheckerColour.RED) && rowDiff == 2) || (pieceToMove.getCheckerColour().equals(CheckerPiece.CheckerColour.BLACK) && rowDiff == -2)
+        || (pieceToMove.isKing() && rowDiff == 2 || rowDiff == -2)) {
+            if (colDiff == 2) {
+                int midRow = (startRow + endRow) / 2;
+                int midCol = (startCol + endCol) / 2;
+                CheckerPiece middlePiece = getPiece(squares[midRow][midCol]);
+                JPanel middlePiece2 = squares[midRow][midCol];
+
+                if (middlePiece != null) {
+                    if ((pieceToMove.getCheckerColour().equals(CheckerPiece.CheckerColour.RED) && middlePiece.getCheckerColour().equals(CheckerPiece.CheckerColour.BLACK))
+                            || (pieceToMove.getCheckerColour().equals(CheckerPiece.CheckerColour.BLACK) && middlePiece.getCheckerColour().equals(CheckerPiece.CheckerColour.RED))) {
+                        if (redTurn) {
+                            redPoints ++;
+                            System.out.println(redPoints);
+                        } else {
+                            blackPoints ++;
+                            System.out.println(blackPoints);
+                        }
+                        middlePiece2.removeAll();
+                        middlePiece2.repaint();
+                        checkWinCondition();
+                        return true;
+                    }
+                }
+            }
+
+
+        }
         return false;
     }
 
