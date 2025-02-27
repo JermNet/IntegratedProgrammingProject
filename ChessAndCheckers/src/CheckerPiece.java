@@ -3,8 +3,6 @@ import java.awt.*;
 
 public class CheckerPiece extends JLabel {
 
-    //Enum for which player/colour the piece belongs to
-    enum CheckerColour { RED, BLACK }
     private CheckerColour checkerColour;
     private boolean isKing;
 
