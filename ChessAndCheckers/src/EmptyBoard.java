@@ -55,6 +55,13 @@ public class EmptyBoard extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
+                new CheckersGameGUI();
+            }});
+
+        chessGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
                 new ChessGameGUI();
             }});
 

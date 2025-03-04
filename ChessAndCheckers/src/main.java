@@ -1,6 +1,9 @@
 public void main(String[] args){
 
-    //new ChessGameGUI();
-    new EmptyBoard();
+    new ChessGameGUI();
+
+
+
+    //new EmptyBoard();
 
 }
