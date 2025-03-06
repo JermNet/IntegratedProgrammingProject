@@ -94,11 +94,11 @@ public class CheckersGameGUI extends JFrame{
 
                 if (col >= 0 && col < 8 && row >= 0 && row < 8) {
                     if (redTurn) {
-                        movePiece(row, col, CheckerColour.RED);
+                        movePiece(row, col, Colour.RED);
                     }
 
                     if (!redTurn) {
-                        movePiece(row, col, CheckerColour.BLACK);
+                        movePiece(row, col, Colour.BLACK);
                     }
                 } else {
                     System.out.println("Clicked out of bounds");
@@ -112,7 +112,7 @@ public class CheckersGameGUI extends JFrame{
         setVisible(true);
     }
 
-    public void movePiece(int row, int col, CheckerColour colour) {
+    public void movePiece(int row, int col, Colour colour) {
         if (clickedSquare && validMove(savedRow, savedCol, row, col)) {
 
             CheckerPiece checkerPiece = getPiece(squares[savedRow][savedCol]);
@@ -136,7 +136,7 @@ public class CheckersGameGUI extends JFrame{
             redTurn = !redTurn;
         }
         try {
-            if (colour == CheckerColour.RED) {
+            if (colour == Colour.RED) {
                 redCanGo = redTurn && getPiece(squares[row][col]).getCheckerColour() == colour;
             } else {
                 blackCanGo = !redTurn && getPiece(squares[row][col]).getCheckerColour() == colour;
@@ -175,9 +175,9 @@ public class CheckersGameGUI extends JFrame{
     }
 
     private CheckerPiece makeKing(CheckerPiece piece, int row) {
-        if ((row == 7 && piece.getCheckerColour() == CheckerColour.RED  || (row == 0 && piece.getCheckerColour() == CheckerColour.BLACK))) {
+        if ((row == 7 && piece.getCheckerColour() == Colour.RED  || (row == 0 && piece.getCheckerColour() == Colour.BLACK))) {
             piece.PromoteKing();
-            if (piece.getCheckerColour() == CheckerColour.BLACK) {
+            if (piece.getCheckerColour() == Colour.BLACK) {
                 piece.setIcon(blackKing);
             } else {
                 piece.setIcon(redKing);
@@ -198,10 +198,10 @@ public class CheckersGameGUI extends JFrame{
                 if ((row % 2 == 0) == (col % 2 == 0)) {
                     square.setBackground(Color.WHITE);
                     if (row < 3) {
-                        CheckerPiece piece = new CheckerPiece(CheckerColour.RED, redPiece);
+                        CheckerPiece piece = new CheckerPiece(Colour.RED, redPiece);
                         square.add(piece);
                     } else if (row > 4) {
-                        CheckerPiece piece = new CheckerPiece(CheckerColour.BLACK, blackPiece);
+                        CheckerPiece piece = new CheckerPiece(Colour.BLACK, blackPiece);
                         System.out.println(blackPiece);
                         square.add(piece);
                     }
@@ -242,14 +242,14 @@ public class CheckersGameGUI extends JFrame{
         int rowDiff = endRow - startRow;
         int colDiff = Math.abs(endCol - startCol);
 
-        boolean validMove = (pieceToMove.getCheckerColour() == CheckerColour.RED && rowDiff == 1) || (pieceToMove.getCheckerColour() == CheckerColour.BLACK && rowDiff == -1)
+        boolean validMove = (pieceToMove.getCheckerColour() == Colour.RED && rowDiff == 1) || (pieceToMove.getCheckerColour() == Colour.BLACK && rowDiff == -1)
                 || (pieceToMove.isKing() && (rowDiff == 1 || rowDiff == -1));
 
         if (validMove && colDiff == 1) {
             return true;
         }
 
-        if ((pieceToMove.getCheckerColour().equals(CheckerColour.RED) && rowDiff == 2) || (pieceToMove.getCheckerColour().equals(CheckerColour.BLACK) && rowDiff == -2)
+        if ((pieceToMove.getCheckerColour().equals(Colour.RED) && rowDiff == 2) || (pieceToMove.getCheckerColour().equals(Colour.BLACK) && rowDiff == -2)
                 || (pieceToMove.isKing() && rowDiff == 2 || rowDiff == -2)) {
             if (colDiff == 2) {
                 int midRow = (startRow + endRow) / 2;
@@ -258,8 +258,8 @@ public class CheckersGameGUI extends JFrame{
                 JPanel middlePiece2 = squares[midRow][midCol];
 
                 if (middlePiece != null) {
-                    if ((pieceToMove.getCheckerColour().equals(CheckerColour.RED) && middlePiece.getCheckerColour().equals(CheckerColour.BLACK))
-                            || (pieceToMove.getCheckerColour().equals(CheckerColour.BLACK) && middlePiece.getCheckerColour().equals(CheckerColour.RED))) {
+                    if ((pieceToMove.getCheckerColour().equals(Colour.RED) && middlePiece.getCheckerColour().equals(Colour.BLACK))
+                            || (pieceToMove.getCheckerColour().equals(Colour.BLACK) && middlePiece.getCheckerColour().equals(Colour.RED))) {
                         if (redTurn) {
                             redPoints ++;
                             System.out.println(redPoints);
@@ -286,9 +286,9 @@ public class CheckersGameGUI extends JFrame{
             for (int col = 0; col < 8; col++) {
                 CheckerPiece piece = getPiece(squares[row][col]);
                 if (piece != null) {
-                    if (piece.getCheckerColour().equals(CheckerColour.RED)) {
+                    if (piece.getCheckerColour().equals(Colour.RED)) {
                         redCount++;
-                    } else if (piece.getCheckerColour().equals(CheckerColour.BLACK)) {
+                    } else if (piece.getCheckerColour().equals(Colour.BLACK)) {
                         blackCount++;
                     }
                 }

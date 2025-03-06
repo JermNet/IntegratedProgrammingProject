@@ -1,14 +1,13 @@
 import javax.swing.*;
-import java.awt.*;
 
 public class CheckerPiece extends JLabel {
 
-    private CheckerColour checkerColour;
+    private Colour colour;
     private boolean isKing;
 
     // Constructor
-    public CheckerPiece(CheckerColour checkerColour, ImageIcon imageIcon) {
-        this.checkerColour = checkerColour;
+    public CheckerPiece(Colour colour, ImageIcon imageIcon) {
+        this.colour = colour;
         this.isKing = false;
         this.setIcon(imageIcon);
     }
@@ -17,7 +16,7 @@ public class CheckerPiece extends JLabel {
 
     }
 
-    public CheckerColour getCheckerColour() { return checkerColour; }
+    public Colour getCheckerColour() { return colour; }
 
     public void PromoteKing() {
         isKing = true;

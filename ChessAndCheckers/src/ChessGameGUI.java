@@ -98,27 +98,27 @@ public class ChessGameGUI extends JFrame{
         border.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-//                Insets insets = border.getInsets();
-//                int x = e.getX() - insets.left;
-//                int y = e.getY() - insets.top;
-//
-//                int cellWidth = border.getWidth() / 8;
-//                int cellHeight = border.getHeight() / 8;
-//                int col = x / cellWidth;
-//                int row = y / cellHeight;
-//                border.revalidate();
-//
-//                if (col >= 0 && col < 8 && row >= 0 && row < 8) {
-//                    if (redTurn) {
-//                        movePiece(row, col, CheckerColour.RED);
-//                    }
-//
-//                    if (!redTurn) {
-//                        movePiece(row, col, CheckerColour.BLACK);
-//                    }
-//                } else {
-//                    System.out.println("Clicked out of bounds");
-//                }
+                Insets insets = border.getInsets();
+                int x = e.getX() - insets.left;
+                int y = e.getY() - insets.top;
+
+                int cellWidth = border.getWidth() / 8;
+                int cellHeight = border.getHeight() / 8;
+                int col = x / cellWidth;
+                int row = y / cellHeight;
+                border.revalidate();
+
+                if (col >= 0 && col < 8 && row >= 0 && row < 8) {
+                    if (redTurn) {
+                        movePiece(row, col, Colour.WHITE);
+                    }
+
+                    if (!redTurn) {
+                        movePiece(row, col, Colour.BLACK);
+                    }
+                } else {
+                    System.out.println("Clicked out of bounds");
+                }
             }
         });
 
@@ -144,50 +144,50 @@ public class ChessGameGUI extends JFrame{
                 }
 
                 if (row == 0 && col == 0 || row == 0 && col == 7) {
-                    ChessPiece piece = new ChessPiece(ChessRank.ROOK, whiteRook);
+                    ChessPiece piece = new ChessPiece(ChessRank.ROOK, Colour.WHITE, whiteRook);
                     square.add(piece);
                 } else if (row == 7 && col == 0 || row == 7 && col == 7) {
-                    ChessPiece piece = new ChessPiece(ChessRank.ROOK, blackRook);
+                    ChessPiece piece = new ChessPiece(ChessRank.ROOK, Colour.BLACK, blackRook);
                     square.add(piece);
                 }
 
                 if (row == 0 && col == 1 || row == 0 && col == 6) {
-                    ChessPiece piece = new ChessPiece(ChessRank.KNIGHT, whiteKnight);
+                    ChessPiece piece = new ChessPiece(ChessRank.KNIGHT, Colour.WHITE, whiteKnight);
                     square.add(piece);
                 } else if (row == 7 && col == 1 || row == 7 && col == 6) {
-                    ChessPiece piece = new ChessPiece(ChessRank.KNIGHT, blackKnight);
+                    ChessPiece piece = new ChessPiece(ChessRank.KNIGHT, Colour.BLACK, blackKnight);
                     square.add(piece);
                 }
 
                 if (row == 0 && col == 2 || row == 0 && col == 5) {
-                    ChessPiece piece = new ChessPiece(ChessRank.BISHOP, whiteBishop);
+                    ChessPiece piece = new ChessPiece(ChessRank.BISHOP, Colour.WHITE, whiteBishop);
                     square.add(piece);
                 } else if (row == 7 && col == 2 || row == 7 && col == 5) {
-                    ChessPiece piece = new ChessPiece(ChessRank.BISHOP, blackBishop);
+                    ChessPiece piece = new ChessPiece(ChessRank.BISHOP, Colour.BLACK, blackBishop);
                     square.add(piece);
                 }
 
                 if (row == 0 && col == 3) {
-                    ChessPiece piece = new ChessPiece(ChessRank.QUEEN, whiteQueen);
+                    ChessPiece piece = new ChessPiece(ChessRank.QUEEN, Colour.WHITE, whiteQueen);
                     square.add(piece);
                 } else if (row == 7 && col == 3) {
-                    ChessPiece piece = new ChessPiece(ChessRank.QUEEN, blackQueen);
+                    ChessPiece piece = new ChessPiece(ChessRank.QUEEN, Colour.BLACK, blackQueen);
                     square.add(piece);
                 }
 
                 if (row == 0 && col == 4) {
-                    ChessPiece piece = new ChessPiece(ChessRank.KING, whiteKing);
+                    ChessPiece piece = new ChessPiece(ChessRank.KING, Colour.WHITE, whiteKing);
                     square.add(piece);
                 } else if (row == 7 && col == 4) {
-                    ChessPiece piece = new ChessPiece(ChessRank.KING, blackKing);
+                    ChessPiece piece = new ChessPiece(ChessRank.KING, Colour.BLACK, blackKing);
                     square.add(piece);
                 }
 
                 if (row == 1) {
-                    ChessPiece piece = new ChessPiece(ChessRank.PAWN, whitePawn);
+                    ChessPiece piece = new ChessPiece(ChessRank.PAWN, Colour.WHITE, whitePawn);
                     square.add(piece);
                 } else if (row == 6) {
-                    ChessPiece piece = new ChessPiece(ChessRank.PAWN, blackPawn);
+                    ChessPiece piece = new ChessPiece(ChessRank.PAWN, Colour.BLACK, blackPawn);
                     square.add(piece);
                 }
                 border.add(square);
@@ -196,18 +196,87 @@ public class ChessGameGUI extends JFrame{
         return border;
     }
 
-//    public void movePiece(int row, int col, CheckerColour colour) {
-//        if (clickedSquare && validMove(savedRow, savedCol, row, col)) {
-//
-//            CheckerPiece checkerPiece = getPiece(squares[savedRow][savedCol]);
-//
-//            squares[savedRow][savedCol].removeAll();
-//            squares[savedRow][savedCol].setBackground(Color.WHITE);
-//            squares[savedRow][savedCol].repaint();
-//
-//            squares[row][col].add(checkerPiece);
-//            squares[row][col].repaint();
-//            CheckerPiece piece = getPiece(squares[row][col]);
+    public boolean validMove(int startRow, int startCol, int endRow, int endCol) {
+        System.out.println("Method Called: VALID MOVE");
+        if (endRow < 0 || endRow >= 8 || endCol < 0 || endCol >= 8) {
+            return false;
+        }
+        if (getPiece(squares[startRow][startCol]) != null) {
+            ChessPiece pieceToMove = getPiece(squares[startRow][startCol]);
+            ChessRank rank = pieceToMove.getChessRank();
+
+            return switch (rank) {
+                case PAWN -> isValidMovePawn(startRow, startCol, endRow, endCol);
+                case ROOK -> isValidMoveRook(startRow, startCol, endRow, endCol);
+                case BISHOP -> isValidMoveBishop(startRow, startCol, endRow, endCol);
+                case KNIGHT -> isValidMoveKnight(startRow, startCol, endRow, endCol);
+                case KING -> isValidMoveKing(startRow, startCol, endRow, endCol);
+                case QUEEN -> isValidMoveQueen(startRow, startCol, endRow, endCol);
+            };
+        }
+        return false;
+
+
+    }
+
+    private boolean isValidMovePawn(int startRow, int startCol, int endRow, int endCol) {
+        ChessPiece pieceToMove = getPiece(squares[startRow][startCol]);
+        int direction = pieceToMove.getColour() == Colour.WHITE ? 1 : -1;
+        System.out.println("1Start: " + startRow + ", " + startCol + "End: " + endRow + ", " + endCol + "\n");
+        if (Math.abs(startCol - endCol) == 1 && endRow == startRow + direction) {
+            ChessPiece opponentPiece = getPiece(squares[endRow][endCol]);
+            boolean canJump = opponentPiece != null && opponentPiece.getColour() != pieceToMove.getColour();
+            System.out.println("2Start: " + startRow + ", " + startCol + "End: " + endRow + ", " + endCol + "\n");
+            if (canJump) {
+                squares[startRow][startCol].removeAll();
+                squares[endRow][endCol].removeAll();
+                squares[endRow][endCol].add(pieceToMove);
+                squares[endRow][endCol].repaint();
+
+                System.out.println("3Start: " + startRow + ", " + startCol + "End: " + endRow + ", " + endCol + "\n");
+                return true;
+            }
+        }
+        System.out.println("4Start: " + startRow + ", " + startCol + "End: " + endRow + ", " + endCol + "\n");
+        if (startCol == endCol && endRow == startRow + direction && getPiece(squares[endRow][endCol]) == null) {
+            return true;
+        }
+
+
+        return false;
+    }
+
+    private boolean isValidMoveRook(int startRow, int startCol, int endRow, int endCol) {
+        return false;
+    }
+
+    private boolean isValidMoveBishop(int startRow, int startCol, int endRow, int endCol) {
+        return false;
+    }
+
+    private boolean isValidMoveKnight(int startRow, int startCol, int endRow, int endCol) {
+        return false;
+    }
+
+    public boolean isValidMoveKing(int startRow, int startCol, int endRow, int endCol) {
+        return false;
+    }
+
+    public boolean isValidMoveQueen(int startRow, int startCol, int endRow, int endCol) {
+        return false;
+    }
+
+    public void movePiece(int row, int col, Colour colour) {
+        if (clickedSquare && validMove(savedRow, savedCol, row, col)) {
+
+            ChessPiece chessPiece = getPiece(squares[savedRow][savedCol]);
+
+            squares[savedRow][savedCol].removeAll();
+            squares[savedRow][savedCol].repaint();
+
+            squares[row][col].add(chessPiece);
+            squares[row][col].repaint();
+            ///ChessPiece piece = getPiece(squares[row][col]);
 //            if (!piece.isKing()) {
 //                piece = makeKing(piece, row);
 //                if (piece != null) {
@@ -216,82 +285,67 @@ public class ChessGameGUI extends JFrame{
 //                    squares[row][col].repaint();
 //                }
 //            }
-//            clickedSquare = false;
-//            redTurn = !redTurn;
-//        }
-//        try {
-//            if (colour == CheckerColour.RED) {
-//                redCanGo = redTurn && getPiece(squares[row][col]).getCheckerColour() == colour;
-//            } else {
-//                blackCanGo = !redTurn && getPiece(squares[row][col]).getCheckerColour() == colour;
-//            }
-//        } catch (Exception ex){
-//            redCanGo = false;
-//        }
-//        if (redCanGo) {
-//            highlightSquare(row, col);
-//            clickedSquare = true;
-//            savedRow = row;
-//            savedCol = col;
-//        } else if (blackCanGo) {
-//            highlightSquare(row, col);
-//            clickedSquare = true;
-//            savedRow = row;
-//            savedCol = col;
-//        }
-//    }
+            clickedSquare = false;
+            redTurn = !redTurn;
+        }
+        try {
+            if (colour == Colour.WHITE) {
+                redCanGo = redTurn && getPiece(squares[row][col]).getColour() == colour;
+            } else {
+                blackCanGo = !redTurn && getPiece(squares[row][col]).getColour() == colour;
+            }
+        } catch (Exception ex){
+            redCanGo = false;
+        }
+        if (redCanGo) {
+            highlightSquare(row, col);
+            clickedSquare = true;
+            savedRow = row;
+            savedCol = col;
+        } else if (blackCanGo) {
+            highlightSquare(row, col);
+            clickedSquare = true;
+            savedRow = row;
+            savedCol = col;
+        }
+    }
 
-//    private void highlightSquare(int row, int col) {
-//        for (int i = 0; i < 8; i++) {
-//            for (int j = 0; j < 8; j++) {
-//                if ((i % 2 == 0) == (j % 2 == 0)) {
-//                    squares[i][j].setBackground(Color.WHITE);
-//
-//                } else {
-//                    squares[i][j].setBackground(Color.BLACK);
-//                }
-//            }
-//        }
-//        if ((row % 2 == 0) == (col % 2 == 0)) {
-//            squares[row][col].setBackground(Color.YELLOW);
-//        }
-//
-//    }
+    private void highlightSquare(int row, int col) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if ((i % 2 == 0) == (j % 2 == 0)) {
+                    squares[i][j].setBackground(Color.WHITE);
 
-//    private CheckerPiece makeKing(CheckerPiece piece, int row) {
-//        if ((row == 7 && piece.getCheckerColour() == CheckerColour.RED  || (row == 0 && piece.getCheckerColour() == CheckerColour.BLACK))) {
-//            piece.PromoteKing();
-//            if (piece.getCheckerColour() == CheckerColour.BLACK) {
-//                piece.setIcon(blackKing);
-//            } else {
-//                piece.setIcon(redKing);
-//            }
-//            return piece;
-//        }
-//        return null;
-//    }
+                } else {
+                    squares[i][j].setBackground(Color.DARK_GRAY);
+                }
+            }
+        }
+        squares[row][col].setBackground(Color.YELLOW);
+
+    }
 
 
 
-//    private boolean hasLabel(JPanel square) {
-//        Component[] components = square.getComponents();
-//        for (Component component : components) {
-//            if (component instanceof JLabel) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//
-//    private CheckerPiece getPiece(JPanel square) {
-//        Component[] components = square.getComponents();
-//        for (Component component : components) {
-//            if (component instanceof CheckerPiece) {
-//                return (CheckerPiece)component;
-//            }
-//        }
-//        return null;
-//    }
+    private boolean hasLabel(JPanel square) {
+        Component[] components = square.getComponents();
+        for (Component component : components) {
+            if (component instanceof JLabel) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private ChessPiece getPiece(JPanel square) {
+        Component[] components = square.getComponents();
+        for (Component component : components) {
+            if (component instanceof ChessPiece) {
+                return (ChessPiece)component;
+            }
+        }
+        return null;
+    }
 //
 //    private boolean validMove (int startRow, int startCol, int endRow, int endCol) {
 //        if (endRow < 0 || endRow >= 8 || endCol < 0 || endCol >= 8 || hasLabel(squares[endRow][endCol])) {
