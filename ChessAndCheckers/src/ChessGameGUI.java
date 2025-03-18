@@ -197,7 +197,7 @@ public class ChessGameGUI extends JFrame{
     }
 
     public boolean validMove(int startRow, int startCol, int endRow, int endCol) {
-        System.out.println("Method Called: VALID MOVE");
+        //System.out.println("Method Called: VALID MOVE");
         if (endRow < 0 || endRow >= 8 || endCol < 0 || endCol >= 8) {
             return false;
         }
@@ -226,27 +226,35 @@ public class ChessGameGUI extends JFrame{
         if (Math.abs(startCol - endCol) == 1 && endRow == startRow + direction) {
             ChessPiece opponentPiece = getPiece(squares[endRow][endCol]);
             boolean canJump = opponentPiece != null && opponentPiece.getColour() != pieceToMove.getColour();
-            System.out.println("2Start: " + startRow + ", " + startCol + "End: " + endRow + ", " + endCol + "\n");
+            //System.out.println("2Start: " + startRow + ", " + startCol + "End: " + endRow + ", " + endCol + "\n");
             if (canJump) {
-                squares[startRow][startCol].removeAll();
+                squares[startRow][startCol].repaint();
                 squares[endRow][endCol].removeAll();
                 squares[endRow][endCol].add(pieceToMove);
                 squares[endRow][endCol].repaint();
-
-                System.out.println("3Start: " + startRow + ", " + startCol + "End: " + endRow + ", " + endCol + "\n");
+                savedCol = endCol;
+                savedRow = endRow;
+                //System.out.println("3Start: " + startRow + ", " + startCol + "End: " + endRow + ", " + endCol + "\n");
                 return true;
             }
         }
-        System.out.println("4Start: " + startRow + ", " + startCol + "End: " + endRow + ", " + endCol + "\n");
+        //System.out.println("4Start: " + startRow + ", " + startCol + "End: " + endRow + ", " + endCol + "\n");
         if (startCol == endCol && endRow == startRow + direction && getPiece(squares[endRow][endCol]) == null) {
             return true;
         }
-
 
         return false;
     }
 
     private boolean isValidMoveRook(int startRow, int startCol, int endRow, int endCol) {
+        System.out.println("In validMoveRook");
+        ChessPiece pieceToMove = getPiece(squares[startRow][startCol]);
+        if (startRow == endRow) {
+            return !blockedPath(startRow, startCol, endRow, endCol);
+        } else if (startCol == endCol) {
+            return !blockedPath(startRow, startCol, endRow, endCol);
+        }
+
         return false;
     }
 
@@ -266,10 +274,51 @@ public class ChessGameGUI extends JFrame{
         return false;
     }
 
+    private boolean blockedPath(int startRow, int startCol, int endRow, int endCol) {
+        int rowDirection = Integer.signum(endRow - startRow);
+        int colDirection = Integer.signum(endCol - startCol);
+
+        int row = startRow + rowDirection;
+        int col = startCol + colDirection;
+        System.out.println("OUT OF BLOCKED PATH LOOP\n");
+//        for (int i = 0; i < 8; i++) {
+//            if (getPiece(squares[endRow][endCol]) != null) {
+//                return true;
+//            }
+//        }
+//        int startPieceRow = 0;
+//        for (int i = startRow+1; i < 8; i++) {
+//            if (getPiece(squares[i][endCol]) != null) {
+//                startPieceRow = i;
+//                break;
+//            }
+//        }
+        // TODO: FIX THIS BOZO
+        for (int i = startRow+1; i < 8; i++) {
+            if (getPiece(squares[i][endCol]) != null) {
+                return true;
+            }
+        }
+
+
+//        while (row != endRow && col != endCol) {
+//            System.out.println("IN BLOCKED PATH LOOP\n");
+//
+//            if (getPiece(squares[row][col]) != null) {
+//                System.out.println("PATH IS BLOCKED\n");
+//                return true;
+//            }
+//            row += rowDirection;
+//            col += colDirection;
+//        }
+        return false;
+    }
+
     public void movePiece(int row, int col, Colour colour) {
         if (clickedSquare && validMove(savedRow, savedCol, row, col)) {
-
+            System.out.println("Moving Piece");
             ChessPiece chessPiece = getPiece(squares[savedRow][savedCol]);
+            System.out.println("ChessPiece: " + chessPiece);
 
             squares[savedRow][savedCol].removeAll();
             squares[savedRow][savedCol].repaint();
@@ -285,8 +334,10 @@ public class ChessGameGUI extends JFrame{
 //                    squares[row][col].repaint();
 //                }
 //            }
+            //System.out.println("1Clicked square: " + clickedSquare + " redTurn: " + redTurn);
             clickedSquare = false;
             redTurn = !redTurn;
+            //System.out.println("2Clicked square: " + clickedSquare + " redTurn: " + redTurn);
         }
         try {
             if (colour == Colour.WHITE) {

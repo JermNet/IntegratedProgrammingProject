@@ -2,7 +2,7 @@ import javax.swing.*;
 
 public class ChessPiece extends JLabel {
     private ChessRank rank;
-    private Colour colour;
+    private final Colour colour;
     private boolean isUpgraded;
 
     public ChessPiece(ChessRank rank, Colour colour, ImageIcon imageIcon) {
