@@ -269,6 +269,17 @@ public class ChessGameGUI extends JFrame{
     }
 
     private boolean isValidMoveKnight(int startRow, int startCol, int endRow, int endCol) {
+        int rowDiff = Math.abs(endRow - startRow);
+        int colDiff = Math.abs(endCol - startCol);
+        if (rowDiff == 2 && colDiff == 1 || rowDiff == 1 && colDiff == 2) {
+            if (getPiece(squares[endRow][endCol]) != null && getPiece(squares[endRow][endCol]).getColour() != getPiece(squares[startRow][startCol]).getColour()) {
+                takePiece(startRow, startCol, endRow, endCol);
+                return true;
+            }
+            if (getPiece(squares[endRow][endCol]) == null) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -277,7 +288,7 @@ public class ChessGameGUI extends JFrame{
         int colDiff = Math.abs(endCol - startCol);
         if (rowDiff <= 1 && colDiff <= 1) {
             if (!blockedPath(startRow, startCol, endRow, endCol)) {
-
+                takePiece(startRow, startCol, endRow, endCol);
                 return true;
             }
         }
