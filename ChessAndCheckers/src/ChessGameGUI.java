@@ -248,7 +248,6 @@ public class ChessGameGUI extends JFrame{
 
     private boolean isValidMoveRook(int startRow, int startCol, int endRow, int endCol) {
         System.out.println("In validMoveRook");
-        ChessPiece pieceToMove = getPiece(squares[startRow][startCol]);
         if (startRow == endRow) {
             return !blockedPath(startRow, startCol, endRow, endCol);
         } else if (startCol == endCol) {
@@ -259,7 +258,14 @@ public class ChessGameGUI extends JFrame{
     }
 
     private boolean isValidMoveBishop(int startRow, int startCol, int endRow, int endCol) {
-        return false;
+        if (Math.abs(endRow - startRow) != Math.abs(endCol - startCol)) {
+            return false;
+        }
+        if(blockedPath(startRow, startCol, endRow, endCol)) {
+            return false;
+        }
+        takePiece(startRow, startCol, endRow, endCol);
+        return true;
     }
 
     private boolean isValidMoveKnight(int startRow, int startCol, int endRow, int endCol) {
@@ -267,11 +273,23 @@ public class ChessGameGUI extends JFrame{
     }
 
     public boolean isValidMoveKing(int startRow, int startCol, int endRow, int endCol) {
+        int rowDiff = Math.abs(endRow - startRow);
+        int colDiff = Math.abs(endCol - startCol);
+        if (rowDiff <= 1 && colDiff <= 1) {
+            if (!blockedPath(startRow, startCol, endRow, endCol)) {
+
+                return true;
+            }
+        }
         return false;
     }
 
     public boolean isValidMoveQueen(int startRow, int startCol, int endRow, int endCol) {
-        return false;
+        if(blockedPath(startRow, startCol, endRow, endCol)) {
+            return false;
+        }
+        takePiece(startRow, startCol, endRow, endCol);
+        return true;
     }
 
     private boolean blockedPath(int startRow, int startCol, int endRow, int endCol) {
@@ -280,39 +298,36 @@ public class ChessGameGUI extends JFrame{
 
         int row = startRow + rowDirection;
         int col = startCol + colDirection;
-        System.out.println("OUT OF BLOCKED PATH LOOP\n");
-//        for (int i = 0; i < 8; i++) {
-//            if (getPiece(squares[endRow][endCol]) != null) {
-//                return true;
-//            }
-//        }
-//        int startPieceRow = 0;
-//        for (int i = startRow+1; i < 8; i++) {
-//            if (getPiece(squares[i][endCol]) != null) {
-//                startPieceRow = i;
-//                break;
-//            }
-//        }
-        // TODO: FIX THIS BOZO
-        for (int i = startRow+1; i < 8; i++) {
-            if (getPiece(squares[i][endCol]) != null) {
+
+        while (row != endRow || col != endCol) {
+            if (getPiece(squares[row][col]) != null) {
+                return true;
+            }
+            row += rowDirection;
+            col += colDirection;
+        }
+        if (getPiece(squares[endRow][endCol]) != null) {
+            System.out.println("In blockedPath not null");
+            if (getPiece(squares[endRow][endCol]).getColour() != getPiece(squares[startRow][startCol]).getColour()) {
+                takePiece(startRow, startCol, endRow, endCol);
+                return false;
+            } else {
                 return true;
             }
         }
-
-
-//        while (row != endRow && col != endCol) {
-//            System.out.println("IN BLOCKED PATH LOOP\n");
-//
-//            if (getPiece(squares[row][col]) != null) {
-//                System.out.println("PATH IS BLOCKED\n");
-//                return true;
-//            }
-//            row += rowDirection;
-//            col += colDirection;
-//        }
         return false;
     }
+
+    public void takePiece(int startRow, int startCol, int endRow, int endCol) {
+        if (getPiece(squares[endRow][endCol]) != null) {
+            if (getPiece(squares[endRow][endCol]).getColour() != getPiece(squares[startRow][startCol]).getColour()) {
+                System.out.println("Colours don't match");
+                squares[endRow][endCol].removeAll();
+                squares[endRow][endCol].repaint();
+            }
+        }
+    }
+
 
     public void movePiece(int row, int col, Colour colour) {
         if (clickedSquare && validMove(savedRow, savedCol, row, col)) {
