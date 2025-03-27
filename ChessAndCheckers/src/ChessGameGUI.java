@@ -446,22 +446,40 @@ public class ChessGameGUI extends JFrame{
             System.out.println("PIECE IS KING");
             kingRow = row;
             kingCol = col;
-        }
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                ChessPiece attackingPiece = getPiece(squares[i][j]);
-                if (attackingPiece != null && attackingPiece.getColour() != colour) {
-                    System.out.println("ATTACKING PIECE NOT NULL");
-                    if (validMove(i, j, kingRow, kingCol)) {
-                        System.out.println("ATTACKING IN CHECK");
-                        return true;
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    ChessPiece attackingPiece = getPiece(squares[i][j]);
+                    if (attackingPiece != null && attackingPiece.getColour() != colour) {
+                        System.out.println("ATTACKING PIECE NOT NULL");
+                        if (validMove(i, j, kingRow, kingCol)) {
+                            System.out.println("ATTACKING IN CHECK");
+                            return true;
+                        }
                     }
                 }
             }
         }
+
+
         return false;
     }
+
+//    private boolean isCheckmate(int row, int col, Colour colour) {
+//        if (!isInCheck(row, col, colour)) {
+//            return false;
+//        }
+//        ChessPiece chessPiece = getPiece(squares[row][col]);
+//        if (chessPiece != null && chessPiece.getColour() == colour) {
+//            for (int i = 0; i < 8; i++) {
+//                for (int j = 0; j < 8; j++) {
+//                    if (validMove(i, j, row, col)) {
+//                        ChessPiece attackingPiece = getPiece(squares[row][col]);
+//                        squares[row][col].removeAll();
+//                    }
+//                }
+//            }
+//        }
+//    }
 
 
 
