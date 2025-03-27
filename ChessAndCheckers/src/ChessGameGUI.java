@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Random;
 
 public class ChessGameGUI extends JFrame{
     private final JPanel[][] squares = new JPanel[8][8];
@@ -94,6 +95,24 @@ public class ChessGameGUI extends JFrame{
                 dispose();
                 new ChessGameGUI();
             }});
+        newRandomGame.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Random rand = new Random();
+                System.out.println(rand);
+
+                // The reason I did it this ways was to have the potential to expand this board with more games, we could do it through this concept.
+                int randomNum = rand.nextInt(100);
+
+                if (randomNum%2 == 0) {
+                    dispose();
+                    new CheckersGameGUI();
+                }
+                if (randomNum%2== 1) {
+                    dispose();
+                    new ChessGameGUI();
+                }
+            }
+        });
 
         border.addMouseListener(new MouseAdapter() {
             @Override
@@ -204,6 +223,7 @@ public class ChessGameGUI extends JFrame{
         if (getPiece(squares[startRow][startCol]) != null) {
             ChessPiece pieceToMove = getPiece(squares[startRow][startCol]);
             ChessRank rank = pieceToMove.getChessRank();
+            System.out.println("Piece not null");
 
             return switch (rank) {
                 case PAWN -> isValidMovePawn(startRow, startCol, endRow, endCol);
@@ -215,7 +235,6 @@ public class ChessGameGUI extends JFrame{
             };
         }
         return false;
-
 
     }
 
@@ -258,6 +277,7 @@ public class ChessGameGUI extends JFrame{
     }
 
     private boolean isValidMoveBishop(int startRow, int startCol, int endRow, int endCol) {
+        System.out.println("In validMoveBishop");
         if (Math.abs(endRow - startRow) != Math.abs(endCol - startCol)) {
             return false;
         }
@@ -269,6 +289,7 @@ public class ChessGameGUI extends JFrame{
     }
 
     private boolean isValidMoveKnight(int startRow, int startCol, int endRow, int endCol) {
+        System.out.println("In validMoveKnight");
         int rowDiff = Math.abs(endRow - startRow);
         int colDiff = Math.abs(endCol - startCol);
         if (rowDiff == 2 && colDiff == 1 || rowDiff == 1 && colDiff == 2) {
@@ -284,6 +305,7 @@ public class ChessGameGUI extends JFrame{
     }
 
     public boolean isValidMoveKing(int startRow, int startCol, int endRow, int endCol) {
+        System.out.println("In validMoveKing");
         int rowDiff = Math.abs(endRow - startRow);
         int colDiff = Math.abs(endCol - startCol);
         if (rowDiff <= 1 && colDiff <= 1) {
@@ -296,6 +318,7 @@ public class ChessGameGUI extends JFrame{
     }
 
     public boolean isValidMoveQueen(int startRow, int startCol, int endRow, int endCol) {
+        System.out.println("In validMoveQueen");
         if(blockedPath(startRow, startCol, endRow, endCol)) {
             return false;
         }
@@ -348,21 +371,34 @@ public class ChessGameGUI extends JFrame{
 
             squares[savedRow][savedCol].removeAll();
             squares[savedRow][savedCol].repaint();
-
             squares[row][col].add(chessPiece);
             squares[row][col].repaint();
-            ///ChessPiece piece = getPiece(squares[row][col]);
-//            if (!piece.isKing()) {
-//                piece = makeKing(piece, row);
-//                if (piece != null) {
-//                    squares[row][col].removeAll();
-//                    squares[row][col].add(piece);
-//                    squares[row][col].repaint();
-//                }
-//            }
+
+            if (isInCheck(row, col, colour)) {
+                squares[row][col].removeAll();
+                squares[row][col].repaint();
+                squares[savedRow][savedCol].add(chessPiece);
+                squares[savedRow][savedCol].repaint();
+                System.out.println("ChessPiece: King is in check");
+            } else {
+                clickedSquare = false;
+                redTurn = !redTurn;
+            }
+            ChessPiece piece = getPiece(squares[row][col]);
+            if (piece != null) {
+                if (piece.getChessRank() == ChessRank.PAWN) {
+                    if (row == 7 && piece.getColour() == Colour.WHITE) {
+                        piece.Upgrade(whiteQueen);
+                    } else if (row == 0 && piece.getColour() == Colour.BLACK) {
+                        piece.Upgrade(blackQueen);
+                    }
+                }
+                squares[row][col].removeAll();
+                squares[row][col].add(piece);
+                squares[row][col].repaint();
+            }
+
             //System.out.println("1Clicked square: " + clickedSquare + " redTurn: " + redTurn);
-            clickedSquare = false;
-            redTurn = !redTurn;
             //System.out.println("2Clicked square: " + clickedSquare + " redTurn: " + redTurn);
         }
         try {
@@ -402,6 +438,31 @@ public class ChessGameGUI extends JFrame{
 
     }
 
+    private boolean isInCheck(int row, int col, Colour colour) {
+        int kingRow = -1, kingCol = -1;
+        ChessPiece chessPiece = getPiece(squares[row][col]);
+        System.out.println("IN IS CHECK");
+        if (chessPiece != null && chessPiece.getChessRank() == ChessRank.KING && chessPiece.getColour() == colour) {
+            System.out.println("PIECE IS KING");
+            kingRow = row;
+            kingCol = col;
+        }
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece attackingPiece = getPiece(squares[i][j]);
+                if (attackingPiece != null && attackingPiece.getColour() != colour) {
+                    System.out.println("ATTACKING PIECE NOT NULL");
+                    if (validMove(i, j, kingRow, kingCol)) {
+                        System.out.println("ATTACKING IN CHECK");
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
 
     private boolean hasLabel(JPanel square) {
@@ -423,76 +484,5 @@ public class ChessGameGUI extends JFrame{
         }
         return null;
     }
-//
-//    private boolean validMove (int startRow, int startCol, int endRow, int endCol) {
-//        if (endRow < 0 || endRow >= 8 || endCol < 0 || endCol >= 8 || hasLabel(squares[endRow][endCol])) {
-//            return false;
-//        }
-//        CheckerPiece pieceToMove = getPiece(squares[startRow][startCol]);
-//        int rowDiff = endRow - startRow;
-//        int colDiff = Math.abs(endCol - startCol);
-//
-//        boolean validMove = (pieceToMove.getCheckerColour() == CheckerColour.RED && rowDiff == 1) || (pieceToMove.getCheckerColour() == CheckerColour.BLACK && rowDiff == -1)
-//                || pieceToMove.isKing();
-//
-//        if (validMove && colDiff == 1) {
-//            return true;
-//        }
-//
-//        if ((pieceToMove.getCheckerColour().equals(CheckerColour.RED) && rowDiff == 2) || (pieceToMove.getCheckerColour().equals(CheckerColour.BLACK) && rowDiff == -2)
-//                || (pieceToMove.isKing() && rowDiff == 2 || rowDiff == -2)) {
-//            if (colDiff == 2) {
-//                int midRow = (startRow + endRow) / 2;
-//                int midCol = (startCol + endCol) / 2;
-//                CheckerPiece middlePiece = getPiece(squares[midRow][midCol]);
-//                JPanel middlePiece2 = squares[midRow][midCol];
-//
-//                if (middlePiece != null) {
-//                    if ((pieceToMove.getCheckerColour().equals(CheckerColour.RED) && middlePiece.getCheckerColour().equals(CheckerColour.BLACK))
-//                            || (pieceToMove.getCheckerColour().equals(CheckerColour.BLACK) && middlePiece.getCheckerColour().equals(CheckerColour.RED))) {
-//                        if (redTurn) {
-//                            redPoints ++;
-//                            System.out.println(redPoints);
-//                        } else {
-//                            blackPoints ++;
-//                            System.out.println(blackPoints);
-//                        }
-//                        middlePiece2.removeAll();
-//                        middlePiece2.repaint();
-//                        checkWinCondition();
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-//        return false;
-//    }
-//
-//    private void checkWinCondition() {
-//        int redCount = 0;
-//        int blackCount = 0;
-//
-//        for (int row = 0; row < 8; row++) {
-//            for (int col = 0; col < 8; col++) {
-//                CheckerPiece piece = getPiece(squares[row][col]);
-//                if (piece != null) {
-//                    if (piece.getCheckerColour().equals(CheckerColour.RED)) {
-//                        redCount++;
-//                    } else if (piece.getCheckerColour().equals(CheckerColour.BLACK)) {
-//                        blackCount++;
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (redCount == 0) {
-//            JOptionPane.showMessageDialog(this, "Black Wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-//            new EmptyBoard();
-//            this.dispose();
-//        } else if (blackCount == 0) {
-//            JOptionPane.showMessageDialog(this, "Red Wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-//            new EmptyBoard();
-//            this.dispose();
-//        }
-//    }
+
 }

@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Random;
 
 public class EmptyBoard extends JFrame {
     private final JPanel[][] squares = new JPanel[8][8];
@@ -64,6 +65,24 @@ public class EmptyBoard extends JFrame {
                 dispose();
                 new ChessGameGUI();
             }});
+        newRandomGame.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Random rand = new Random();
+                System.out.println(rand);
+
+                // The reason I did it this ways was to have the potential to expand this board with more games, we could do it through this concept.
+                int randomNum = rand.nextInt(100);
+
+                if (randomNum%2 == 0) {
+                    dispose();
+                    new CheckersGameGUI();
+                }
+                if (randomNum%2== 1) {
+                    dispose();
+                    new ChessGameGUI();
+                }
+            }
+        });
 
         add(border, BorderLayout.CENTER);
         add(button, BorderLayout.SOUTH);

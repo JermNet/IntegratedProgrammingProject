@@ -16,9 +16,10 @@ public class ChessPiece extends JLabel {
 
     public Colour getColour() { return colour; }
 
-    public void Upgrade() {
+    public void Upgrade(ImageIcon imageIcon) {
         if (rank == ChessRank.PAWN) {
             rank = ChessRank.QUEEN;
+            this.setIcon(imageIcon);
         }
         isUpgraded = true;
     }
