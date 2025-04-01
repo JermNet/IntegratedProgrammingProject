@@ -13,7 +13,7 @@ public class ChessGameGUI extends JFrame{
     private final JPanel[][] squares = new JPanel[8][8];
     private boolean clickedSquare = false;
     private int savedRow = 0, savedCol = 0;
-    private PieceLoader loader = new PieceLoader();
+    private final PieceLoader loader = new PieceLoader();
 
     private final ImageIcon blackPawn = loader.getPiece("black_pawn");
     private final ImageIcon whitePawn = loader.getPiece("white_pawn");
@@ -33,11 +33,10 @@ public class ChessGameGUI extends JFrame{
     private final ImageIcon blackQueen = loader.getPiece("black_queen");
     private final ImageIcon whiteQueen = loader.getPiece("white_queen");
 
-    boolean redCanGo;
-    boolean blackCanGo;
+    private boolean redCanGo;
+    private boolean blackCanGo;
 
     private boolean redTurn = true;
-    private int blackPoints = 0, redPoints = 0;
 
     public ChessGameGUI() {
 
@@ -127,13 +126,16 @@ public class ChessGameGUI extends JFrame{
                 int row = y / cellHeight;
                 border.revalidate();
 
+
                 if (col >= 0 && col < 8 && row >= 0 && row < 8) {
                     if (redTurn) {
                         movePiece(row, col, Colour.WHITE);
+
                     }
 
                     if (!redTurn) {
                         movePiece(row, col, Colour.BLACK);
+
                     }
                 } else {
                     System.out.println("Clicked out of bounds");
@@ -339,6 +341,13 @@ public class ChessGameGUI extends JFrame{
             }
             row += rowDirection;
             col += colDirection;
+
+            if (col > 7) {
+                col = 7;
+            }
+
+            System.out.println("Blocked path row: " + row + " Blocked path col: " + col);
+
         }
         if (getPiece(squares[endRow][endCol]) != null) {
             System.out.println("In blockedPath not null");
@@ -355,7 +364,11 @@ public class ChessGameGUI extends JFrame{
     public void takePiece(int startRow, int startCol, int endRow, int endCol) {
         if (getPiece(squares[endRow][endCol]) != null) {
             if (getPiece(squares[endRow][endCol]).getColour() != getPiece(squares[startRow][startCol]).getColour()) {
-                System.out.println("Colours don't match");
+//                if (getPiece(squares[endRow][endCol]).getChessRank() == ChessRank.KING) {
+//                    JOptionPane.showMessageDialog(this, getPiece(squares[startRow][startCol]).getColour() + " wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+//                    new EmptyBoard();
+//                    this.dispose();
+//                }
                 squares[endRow][endCol].removeAll();
                 squares[endRow][endCol].repaint();
             }
@@ -374,6 +387,16 @@ public class ChessGameGUI extends JFrame{
             squares[row][col].add(chessPiece);
             squares[row][col].repaint();
 
+            if (getPiece(squares[row][col]).getChessRank() != ChessRank.KING) {
+                if (isCheckmate(row, col, Colour.WHITE)) {
+                    getWinner("Black Wins!");
+                }
+
+                if (isCheckmate(row, col, Colour.BLACK)) {
+                    getWinner("White Wins!");
+                }
+            }
+
             if (isInCheck(row, col, colour)) {
                 squares[row][col].removeAll();
                 squares[row][col].repaint();
@@ -384,6 +407,7 @@ public class ChessGameGUI extends JFrame{
                 clickedSquare = false;
                 redTurn = !redTurn;
             }
+
             ChessPiece piece = getPiece(squares[row][col]);
             if (piece != null) {
                 if (piece.getChessRank() == ChessRank.PAWN) {
@@ -464,22 +488,33 @@ public class ChessGameGUI extends JFrame{
         return false;
     }
 
-//    private boolean isCheckmate(int row, int col, Colour colour) {
-//        if (!isInCheck(row, col, colour)) {
-//            return false;
-//        }
-//        ChessPiece chessPiece = getPiece(squares[row][col]);
-//        if (chessPiece != null && chessPiece.getColour() == colour) {
-//            for (int i = 0; i < 8; i++) {
-//                for (int j = 0; j < 8; j++) {
-//                    if (validMove(i, j, row, col)) {
-//                        ChessPiece attackingPiece = getPiece(squares[row][col]);
-//                        squares[row][col].removeAll();
-//                    }
-//                }
-//            }
-//        }
-//    }
+    private boolean isCheckmate(int row, int col, Colour colour) {
+        if (!isInCheck(row, col, colour)) {
+            return false;
+        }
+        ChessPiece chessPiece = getPiece(squares[row][col]);
+        if (chessPiece != null && chessPiece.getColour() == colour) {
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (validMove(i, j, row, col)) {
+                        ChessPiece attackingPiece = getPiece(squares[row][col]);
+                        squares[row][col].removeAll();
+                        squares[i][j].removeAll();
+                        squares[row][col].add(attackingPiece);
+                        squares[row][col].repaint();
+
+//                        if (!isInCheck(row, col, colour)) {
+//                            return false;
+//                        }
+                        squares[row][col].removeAll();
+                        squares[i][j].add(attackingPiece);
+                        squares[i][j].repaint();
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
 
 
@@ -501,6 +536,27 @@ public class ChessGameGUI extends JFrame{
             }
         }
         return null;
+    }
+
+    private void getWinner(String winner) {
+        JOptionPane.showMessageDialog(this, winner, "Game Over", JOptionPane.INFORMATION_MESSAGE);
+        new EmptyBoard();
+        this.dispose();
+    }
+
+    private void getWinnerTakenPieces(Colour colour) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+
+                ChessPiece chessPiece = getPiece(squares[i][j]);
+
+
+
+                if (chessPiece != null && chessPiece.getChessRank() == ChessRank.KING && chessPiece.getColour() == colour) {
+                    JOptionPane.showMessageDialog(this, colour.toString() + " wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        }
     }
 
 }
