@@ -350,7 +350,7 @@ public class ChessGameGUI extends JFrame{
             squares[row][col].repaint();
 
             if (isKingCaptured()) {
-                if (colour == Colour.WHITE) {
+                if (colour == Colour.BLACK) {
                     getWinner("Black Wins!");
                 } else {
                     getWinner("White Wins!");
