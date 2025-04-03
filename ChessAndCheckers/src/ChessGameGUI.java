@@ -349,6 +349,15 @@ public class ChessGameGUI extends JFrame{
             squares[row][col].add(chessPiece);
             squares[row][col].repaint();
 
+            if (isKingCaptured()) {
+                if (colour == Colour.WHITE) {
+                    getWinner("Black Wins!");
+                } else {
+                    getWinner("White Wins!");
+                }
+                return;
+            }
+
             if (getPiece(squares[row][col]).getChessRank() != ChessRank.KING) {
                 if (isCheckmate(row, col, Colour.WHITE)) {
                     getWinner("Black Wins!");
@@ -494,16 +503,25 @@ public class ChessGameGUI extends JFrame{
         this.dispose();
     }
 
-    private void endGame(String winner) {
-        for (int i = 0; i < 7; i++) {
-            for (int j = 0; j < 7; j++) {
-                if(getPiece(squares[i][j]) != null) {
-                    if (getPiece(squares[i][j]).getColour() == Colour.WHITE && getPiece(squares[i][j]).getChessRank() == ChessRank.KING) {
+    private boolean isKingCaptured() {
+        boolean whiteKingFound = false;
+        boolean blackKingFound = false;
 
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece piece = getPiece(squares[i][j]);
+                if (piece != null) {
+                    if (piece.getChessRank() == ChessRank.KING) {
+                        if (piece.getColour() == Colour.WHITE) {
+                            whiteKingFound = true;
+                        } else if (piece.getColour() == Colour.BLACK) {
+                            blackKingFound = true;
+                        }
                     }
                 }
             }
         }
+        return !whiteKingFound || !blackKingFound;
     }
 
 }
