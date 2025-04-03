@@ -4,16 +4,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Random;
 
 public class ChessGameGUI extends JFrame{
     private final JPanel[][] squares = new JPanel[8][8];
     private boolean clickedSquare = false;
     private int savedRow = 0, savedCol = 0;
     private final PieceLoader loader = new PieceLoader();
+    private final ButtonActions buttonActions = new ButtonActions();
 
     private final ImageIcon blackPawn = loader.getPiece("black_pawn");
     private final ImageIcon whitePawn = loader.getPiece("white_pawn");
@@ -37,6 +34,7 @@ public class ChessGameGUI extends JFrame{
     private boolean blackCanGo;
 
     private boolean redTurn = true;
+    private JPanel border;
 
     public ChessGameGUI() {
 
@@ -52,7 +50,7 @@ public class ChessGameGUI extends JFrame{
         this.setResizable(false);
         setLayout(new BorderLayout());
 
-        JPanel border = getjPanel();
+        border = getjPanel();
         button.add(newRandomGame).setLocation(1,1);
         button.add(helpGame).setLocation(2,1);
         button.add(chessGame).setLocation(2,2);
@@ -65,81 +63,31 @@ public class ChessGameGUI extends JFrame{
 
         helpGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Help Me! was clicked!");
-                try {
-                    URI uri = new URI("https://www.chess.com/learn-how-to-play-chess");
-                    URI uri2 = new URI("https://www.officialgamerules.org/board-games/checkers");
-                    if (Desktop.isDesktopSupported()) {
-                        Desktop.getDesktop().browse(uri);
-                        Desktop.getDesktop().browse(uri2);
-                    } else {
-                        System.out.println("Desktop not supported.");
-                    }
-                } catch (URISyntaxException | IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                buttonActions.helpClick();
             }
         });
 
         checkerGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
-                new CheckersGameGUI();
+                buttonActions.checkerClick(ChessGameGUI.this);
             }});
 
         chessGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
-                new ChessGameGUI();
+                buttonActions.chessClick(ChessGameGUI.this);
             }});
         newRandomGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Random rand = new Random();
-                System.out.println(rand);
-
-                // The reason I did it this ways was to have the potential to expand this board with more games, we could do it through this concept.
-                int randomNum = rand.nextInt(100);
-
-                if (randomNum%2 == 0) {
-                    dispose();
-                    new CheckersGameGUI();
-                }
-                if (randomNum%2== 1) {
-                    dispose();
-                    new ChessGameGUI();
-                }
+                buttonActions.randomClick(ChessGameGUI.this);
             }
         });
 
         border.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Insets insets = border.getInsets();
-                int x = e.getX() - insets.left;
-                int y = e.getY() - insets.top;
-
-                int cellWidth = border.getWidth() / 8;
-                int cellHeight = border.getHeight() / 8;
-                int col = x / cellWidth;
-                int row = y / cellHeight;
-                border.revalidate();
-
-
-                if (col >= 0 && col < 8 && row >= 0 && row < 8) {
-                    if (redTurn) {
-                        movePiece(row, col, Colour.WHITE);
-
-                    }
-
-                    if (!redTurn) {
-                        movePiece(row, col, Colour.BLACK);
-
-                    }
-                } else {
-                    System.out.println("Clicked out of bounds");
-                }
+                border = gameLoop(e, border);
             }
         });
 
@@ -147,6 +95,34 @@ public class ChessGameGUI extends JFrame{
         add(button, BorderLayout.SOUTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+    }
+
+    private JPanel gameLoop(MouseEvent e, JPanel border) {
+        Insets insets = border.getInsets();
+        int x = e.getX() - insets.left;
+        int y = e.getY() - insets.top;
+
+        int cellWidth = border.getWidth() / 8;
+        int cellHeight = border.getHeight() / 8;
+        int col = x / cellWidth;
+        int row = y / cellHeight;
+        border.revalidate();
+
+
+        if (col >= 0 && col < 8 && row >= 0 && row < 8) {
+            if (redTurn) {
+                movePiece(row, col, Colour.WHITE);
+
+            }
+
+            if (!redTurn) {
+                movePiece(row, col, Colour.BLACK);
+
+            }
+        } else {
+            System.out.println("Clicked out of bounds");
+        }
+        return border;
     }
 
     private JPanel getjPanel() {
@@ -240,6 +216,15 @@ public class ChessGameGUI extends JFrame{
 
     }
 
+    public void takePiece(int startRow, int startCol, int endRow, int endCol) {
+        if (getPiece(squares[endRow][endCol]) != null && getPiece(squares[startRow][startCol]) != null) {
+            if (getPiece(squares[endRow][endCol]).getColour() != getPiece(squares[startRow][startCol]).getColour()) {
+                squares[endRow][endCol].removeAll();
+                squares[endRow][endCol].repaint();
+            }
+        }
+    }
+
     private boolean isValidMovePawn(int startRow, int startCol, int endRow, int endCol) {
         ChessPiece pieceToMove = getPiece(squares[startRow][startCol]);
         int direction = pieceToMove.getColour() == Colour.WHITE ? 1 : -1;
@@ -249,13 +234,7 @@ public class ChessGameGUI extends JFrame{
             boolean canJump = opponentPiece != null && opponentPiece.getColour() != pieceToMove.getColour();
             //System.out.println("2Start: " + startRow + ", " + startCol + "End: " + endRow + ", " + endCol + "\n");
             if (canJump) {
-                squares[startRow][startCol].repaint();
-                squares[endRow][endCol].removeAll();
-                squares[endRow][endCol].add(pieceToMove);
-                squares[endRow][endCol].repaint();
-                savedCol = endCol;
-                savedRow = endRow;
-                //System.out.println("3Start: " + startRow + ", " + startCol + "End: " + endRow + ", " + endCol + "\n");
+                takePiece(startRow, startCol, endRow, endCol);
                 return true;
             }
         }
@@ -269,12 +248,12 @@ public class ChessGameGUI extends JFrame{
 
     private boolean isValidMoveRook(int startRow, int startCol, int endRow, int endCol) {
         System.out.println("In validMoveRook");
-        if (startRow == endRow) {
-            return !blockedPath(startRow, startCol, endRow, endCol);
-        } else if (startCol == endCol) {
-            return !blockedPath(startRow, startCol, endRow, endCol);
+        if (startRow == endRow || startCol == endCol) {
+            if (!blockedPath(startRow, startCol, endRow, endCol)) {
+                takePiece(startRow, startCol, endRow, endCol);
+                return true;
+            }
         }
-
         return false;
     }
 
@@ -286,7 +265,7 @@ public class ChessGameGUI extends JFrame{
         if(blockedPath(startRow, startCol, endRow, endCol)) {
             return false;
         }
-        takePiece(startRow, startCol, endRow, endCol);
+        //takePiece(startRow, startCol, endRow, endCol);
         return true;
     }
 
@@ -360,21 +339,6 @@ public class ChessGameGUI extends JFrame{
         }
         return false;
     }
-
-    public void takePiece(int startRow, int startCol, int endRow, int endCol) {
-        if (getPiece(squares[endRow][endCol]) != null) {
-            if (getPiece(squares[endRow][endCol]).getColour() != getPiece(squares[startRow][startCol]).getColour()) {
-//                if (getPiece(squares[endRow][endCol]).getChessRank() == ChessRank.KING) {
-//                    JOptionPane.showMessageDialog(this, getPiece(squares[startRow][startCol]).getColour() + " wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-//                    new EmptyBoard();
-//                    this.dispose();
-//                }
-                squares[endRow][endCol].removeAll();
-                squares[endRow][endCol].repaint();
-            }
-        }
-    }
-
 
     public void movePiece(int row, int col, Colour colour) {
         if (clickedSquare && validMove(savedRow, savedCol, row, col)) {
@@ -514,18 +478,6 @@ public class ChessGameGUI extends JFrame{
             }
         }
         return true;
-    }
-
-
-
-    private boolean hasLabel(JPanel square) {
-        Component[] components = square.getComponents();
-        for (Component component : components) {
-            if (component instanceof JLabel) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private ChessPiece getPiece(JPanel square) {

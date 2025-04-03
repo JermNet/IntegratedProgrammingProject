@@ -14,6 +14,7 @@ public class CheckersGameGUI extends JFrame{
     private boolean clickedSquare = false;
     private int savedRow = 0, savedCol = 0;
     private final PieceLoader loader = new PieceLoader();
+    private final ButtonActions buttonActions = new ButtonActions();
 
     private final ImageIcon blackPiece = loader.getPiece("blackcircle");
     private final ImageIcon redPiece = loader.getPiece("redcircle");
@@ -50,60 +51,26 @@ public class CheckersGameGUI extends JFrame{
 
         helpGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Help Me! was clicked!");
-                try {
-                    URI uri = new URI("https://www.chess.com/learn-how-to-play-chess");
-                    URI uri2 = new URI("https://www.officialgamerules.org/board-games/checkers");
-                    if (Desktop.isDesktopSupported()) {
-                        Desktop.getDesktop().browse(uri);
-                        Desktop.getDesktop().browse(uri2);
-                    } else {
-                        System.out.println("Desktop not supported.");
-                    }
-                } catch (URISyntaxException | IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                buttonActions.helpClick();
             }
         });
 
         checkerGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
-                new CheckersGameGUI();
+                buttonActions.checkerClick(CheckersGameGUI.this);
             }});
 
         chessGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
-                new ChessGameGUI();
+                buttonActions.chessClick(CheckersGameGUI.this);
             }});
 
         border.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Insets insets = border.getInsets();
-                int x = e.getX() - insets.left;
-                int y = e.getY() - insets.top;
-
-                int cellWidth = border.getWidth() / 8;
-                int cellHeight = border.getHeight() / 8;
-                int col = x / cellWidth;
-                int row = y / cellHeight;
-                border.revalidate();
-
-                if (col >= 0 && col < 8 && row >= 0 && row < 8) {
-                    if (redTurn) {
-                        movePiece(row, col, Colour.RED);
-                    }
-
-                    if (!redTurn) {
-                        movePiece(row, col, Colour.BLACK);
-                    }
-                } else {
-                    System.out.println("Clicked out of bounds");
-                }
+                buttonActions.randomClick(CheckersGameGUI.this);
             }
         });
 
