@@ -70,26 +70,33 @@ public class CheckersGameGUI extends JFrame{
         border.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                buttonActions.randomClick(CheckersGameGUI.this);
+                Insets insets = border.getInsets();
+                int x = e.getX() - insets.left;
+                int y = e.getY() - insets.top;
+
+                int cellWidth = border.getWidth() / 8;
+                int cellHeight = border.getHeight() / 8;
+                int col = x / cellWidth;
+                int row = y / cellHeight;
+                border.revalidate();
+
+                if (col >= 0 && col < 8 && row >= 0 && row < 8) {
+                    if (redTurn) {
+                        movePiece(row, col, Colour.RED);
+                    }
+
+                    if (!redTurn) {
+                        movePiece(row, col, Colour.BLACK);
+                    }
+                } else {
+                    System.out.println("Clicked out of bounds");
+                }
             }
         });
 
         newRandomGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Random rand = new Random();
-                System.out.println(rand);
-
-                // The reason I did it this ways was to have the potential to expand this board with more games, we could do it through this concept.
-                int randomNum = rand.nextInt(100);
-
-                if (randomNum%2 == 0) {
-                    dispose();
-                    new CheckersGameGUI();
-                }
-                if (randomNum%2== 1) {
-                    dispose();
-                    new ChessGameGUI();
-                }
+                buttonActions.randomClick(CheckersGameGUI.this);
             }
         });
 

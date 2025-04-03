@@ -494,4 +494,16 @@ public class ChessGameGUI extends JFrame{
         this.dispose();
     }
 
+    private void endGame(String winner) {
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                if(getPiece(squares[i][j]) != null) {
+                    if (getPiece(squares[i][j]).getColour() == Colour.WHITE && getPiece(squares[i][j]).getChessRank() == ChessRank.KING) {
+
+                    }
+                }
+            }
+        }
+    }
+
 }
