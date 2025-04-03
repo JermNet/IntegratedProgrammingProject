@@ -1,8 +1,7 @@
-# IDEAS
--Image Comparison
--Send Email Program
--Java GUI Thingy
--Android App
--C/C++ GUI Thingy
--TETRIS 2!?!?!
--Game With Online Play? (Might be crazy)
+# HOW TO RUN
+Use IntelliJ IDEA compiler and click on main.java and hit run. 
+
+# Games
+You can choose between two classic games: chess and checkers. 
+
+# Pictures
