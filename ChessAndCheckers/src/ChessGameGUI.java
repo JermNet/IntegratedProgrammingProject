@@ -37,8 +37,6 @@ public class ChessGameGUI extends JFrame{
     private JPanel border;
 
     public ChessGameGUI() {
-
-
         JPanel button = new JPanel(new GridLayout(2, 1));
         JButton newRandomGame = new JButton("New Random Game");
         JButton checkerGame = new JButton("Checker Game");
@@ -494,21 +492,6 @@ public class ChessGameGUI extends JFrame{
         JOptionPane.showMessageDialog(this, winner, "Game Over", JOptionPane.INFORMATION_MESSAGE);
         new EmptyBoard();
         this.dispose();
-    }
-
-    private void getWinnerTakenPieces(Colour colour) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-
-                ChessPiece chessPiece = getPiece(squares[i][j]);
-
-
-
-                if (chessPiece != null && chessPiece.getChessRank() == ChessRank.KING && chessPiece.getColour() == colour) {
-                    JOptionPane.showMessageDialog(this, colour.toString() + " wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        }
     }
 
 }
